@@ -26,6 +26,7 @@ class Deployment:
     price = 1280
 
     def __init__(self, calendar_entry):
+        self.id = calendar_entry['id']
         self.customer = calendar_entry['summary'].replace('Kunde: ', '')
         self.date = dateutil.parser.parse(calendar_entry['start'].get('dateTime', calendar_entry['start'].get('date')))
         if 'description' not in calendar_entry:
@@ -51,10 +52,10 @@ class DeploymentsCollection(Resource):
                 DeploymentsCollection.calendar_service.customer_events(2019, 12)]
 
 
-@ns.route('/<int:id>')
+@ns.route('/<string:id>')
 class DeploymentItem(Resource):
     calendar_service = GoogleCalendarService()
 
     @api.marshal_with(deployment)
     def get(self, id):
-        return None
+        return Deployment(DeploymentItem.calendar_service.event_by_id(id))

@@ -3,7 +3,7 @@ from flask_restplus import fields
 from api.restplus import api
 
 deployment = api.model('Deployment', {
-    'id': fields.Integer(readOnly=True, description='The unique identifier'),
+    'id': fields.String(readOnly=True, description='The unique identifier'),
     'customer': fields.String(required=True, description='Name of the customer'),
     'action': fields.String(required=True, description='Description of the action'),
     'date': fields.DateTime(required=True, description='Date of the deployment'),

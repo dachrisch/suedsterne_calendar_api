@@ -15,13 +15,17 @@ class GoogleCalendarService(object):
         start_of_month = reference.isoformat() + 'Z'
         end_of_month = (reference.replace(
             day=calendar.monthrange(reference.year, reference.month)[1])).isoformat() + 'Z'
-        events = self.__calendar_service().events().list(calendarId='primary', timeMin=start_of_month,
-                                                         timeMax=end_of_month,
-                                                         singleEvents=True,
-                                                         orderBy='startTime', q=template).execute().get('items', [])
+        events = self.make_service().events().list(calendarId='primary', timeMin=start_of_month,
+                                                   timeMax=end_of_month,
+                                                   singleEvents=True,
+                                                   orderBy='startTime', q=template).execute().get('items', [])
         return events
 
-    def __calendar_service(self):
+    def event_by_id(self, _id):
+        return self.make_service().events().get(calendarId='primary', eventId=_id).execute()
+
+    @classmethod
+    def make_service(cls):
         credentials = service_account.Credentials.from_service_account_file(
             path.join(path.join(path.expanduser('~'), '.credentials'), 'suedsterne-1328.json'),
             scopes=SCOPES).with_subject('cd@it-agile.de')
