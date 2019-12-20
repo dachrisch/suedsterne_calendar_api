@@ -49,3 +49,12 @@ class DeploymentsCollection(Resource):
     def get(self):
         return [Deployment(calendar_entry) for calendar_entry in
                 DeploymentsCollection.calendar_service.customer_events(2019, 12)]
+
+
+@ns.route('/<int:id>')
+class DeploymentItem(Resource):
+    calendar_service = GoogleCalendarService()
+
+    @api.marshal_with(deployment)
+    def get(self, id):
+        return None

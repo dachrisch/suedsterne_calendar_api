@@ -7,7 +7,6 @@ import settings
 from api.endpoints.deployment import ns as deployments_namespace
 from api.restplus import api
 
-app = Flask(__name__)
 logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), './logging.conf'))
 logging.config.fileConfig(logging_conf_path)
 log = logging.getLogger(__name__)
@@ -21,7 +20,9 @@ def configure_app(flask_app):
     flask_app.config['ERROR_404_HELP'] = settings.RESTPLUS_ERROR_404_HELP
 
 
-def initialize_app(flask_app):
+def create_app():
+    flask_app = Flask(__name__)
+
     configure_app(flask_app)
 
     blueprint = Blueprint('api', __name__, url_prefix='/api')
@@ -30,9 +31,11 @@ def initialize_app(flask_app):
     api.add_namespace(deployments_namespace)
     flask_app.register_blueprint(blueprint)
 
+    return flask_app
+
 
 def main():
-    initialize_app(app)
+    app = create_app()
     log.info('>>>>> Starting development server at http://{}/api/ <<<<<'.format(app.config['SERVER_NAME']))
     app.run(debug=settings.FLASK_DEBUG)
 

@@ -1,10 +1,7 @@
 import unittest
 
-from flask import Blueprint
-
-from api.endpoints.deployment import ns as invoices_namespace, DeploymentsCollection
-from api.restplus import api
-from app import app
+from api.endpoints.deployment import DeploymentsCollection
+from app import create_app
 
 
 class TestCalendarService:
@@ -22,19 +19,16 @@ class TestCalendarService:
 class TestInvoiceApp(unittest.TestCase):
     def setUp(self):
         DeploymentsCollection.calendar_service = TestCalendarService()
-        self.app = app
-        blueprint = Blueprint('api', __name__, url_prefix='/api')
-
-        api.init_app(blueprint)
-        api.add_namespace(invoices_namespace)
-
-        self.app.register_blueprint(blueprint)
+        self.app = create_app().test_client()
 
     def test_deployments_parsed(self):
-        with self.app.test_client() as context:
-            response = context.get('/api/deployments', follow_redirects=True)
-            self.assertEqual(response.status_code, 200)
-            self.assertIn(b'"customer": "zeppelin"', response.data)
-            self.assertIn(b'"action": "Coaching"', response.data)
-            self.assertIn(b'"price": "1800"', response.data)
-            self.assertIn(b'"date": "2019-10-01', response.data)
+        response = self.app.get('/api/deployments', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'"customer": "zeppelin"', response.data)
+        self.assertIn(b'"action": "Coaching"', response.data)
+        self.assertIn(b'"price": "1800"', response.data)
+        self.assertIn(b'"date": "2019-10-01', response.data)
+
+    def test_deployment_by_id(self):
+        response = self.app.get('/api/deployments/1', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
