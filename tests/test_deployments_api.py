@@ -1,23 +1,32 @@
 import unittest
+from datetime import datetime
 
 from api.endpoints.deployment import DeploymentsCollection, DeploymentItem
 from app import create_app
 
 
 class TestCalendarService:
-    def customer_events(self, year, month):
-        return [{'kind': 'calendar#event',
-                 'id': '678495465gfds347859uzhkgjf',
-                 'summary': 'Kunde: zeppelin',
-                 'start': {'date': '2019-10-01'},
-                 'description': 'Action: Coaching\nPrice: 1800 €\nTravel Expense: 100 €'
-                 },
-                {'kind': 'calendar#event',
-                 'id': 'jsdhfg945nkgfd374fe',
-                 'summary': 'Kunde: zeppelin',
-                 'start': {'date': '2019-10-02'},
-                 'description': 'Action: Coaching\nPrice: 1800 €\nTravel Expense: 100 €'
-                 }]
+    def customer_events(self, from_date: datetime, to_date: datetime, template: str = 'Kunde: '):
+        one = {'kind': 'calendar#event',
+               'id': '678495465gfds347859uzhkgjf',
+               'summary': 'Kunde: zeppelin',
+               'start': {'date': '2019-10-01'},
+               'description': 'Action: Coaching\nPrice: 1800 €\nTravel Expense: 100 €'
+               }
+        two = {'kind': 'calendar#event',
+               'id': 'jsdhfg945nkgfd374fe',
+               'summary': 'Kunde: zeppelin',
+               'start': {'date': '2019-10-02'},
+               'description': 'Action: Coaching\nPrice: 1800 €\nTravel Expense: 100 €'
+               }
+        if from_date <= datetime(2019, 10, 1) < to_date:
+            return [one, two]
+        elif from_date <= datetime(2019, 10, 2) <= to_date:
+            return [two]
+        elif from_date <= datetime(2019, 10, 1) <= to_date:
+            return [one]
+        else:
+            return []
 
     def event_by_id(self, id):
         if '678495465gfds347859uzhkgjf' == id:
@@ -34,14 +43,40 @@ class TestCalendarService:
             return None
 
 
-class TestInvoiceApp(unittest.TestCase):
+class TestDeploymentsApi(unittest.TestCase):
     def setUp(self):
         DeploymentsCollection.calendar_service = TestCalendarService()
         DeploymentItem.calendar_service = TestCalendarService()
         self.app = create_app().test_client()
 
-    def test_deployments_parsed(self):
-        response = self.app.get('/api/deployments', follow_redirects=True)
+    def test_none_found_with_start_date(self):
+        response = self.app.get('/api/deployments?start_date=2019-10-03&end_date=2019-12-31', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'[]\n', response.data)
+
+    def test_one_found_with_start_date(self):
+        response = self.app.get('/api/deployments?start_date=2019-10-02&end_date=2019-12-31', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'"id": "jsdhfg945nkgfd374fe"', response.data)
+
+    def test_two_found_with_start_date(self):
+        response = self.app.get('/api/deployments?start_date=2019-10-01&end_date=2019-12-31', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'"id": "678495465gfds347859uzhkgjf"', response.data)
+        self.assertIn(b'"id": "jsdhfg945nkgfd374fe"', response.data)
+
+    def test_none_found_with_end_date(self):
+        response = self.app.get('/api/deployments?start_date=2019-09-01&end_date=2019-09-02', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'[]\n', response.data)
+
+    def test_one_found_with_end_date(self):
+        response = self.app.get('/api/deployments?start_date=2019-09-01&end_date=2019-10-01', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'"id": "678495465gfds347859uzhkgjf"', response.data)
+
+    def test_two_found_with_end_date(self):
+        response = self.app.get('/api/deployments?start_date=2019-09-01&end_date=2019-10-02', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'"id": "678495465gfds347859uzhkgjf"', response.data)
         self.assertIn(b'"id": "jsdhfg945nkgfd374fe"', response.data)

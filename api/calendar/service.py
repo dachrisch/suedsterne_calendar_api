@@ -1,4 +1,3 @@
-import calendar
 from datetime import datetime
 from os import path
 
@@ -10,13 +9,9 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 class GoogleCalendarService(object):
 
-    def customer_events(self, year: int, month: int, template: str = 'Kunde: '):
-        reference = datetime(year=year, month=month, day=1)
-        start_of_month = reference.isoformat() + 'Z'
-        end_of_month = (reference.replace(
-            day=calendar.monthrange(reference.year, reference.month)[1])).isoformat() + 'Z'
-        events = self.make_service().events().list(calendarId='primary', timeMin=start_of_month,
-                                                   timeMax=end_of_month,
+    def customer_events(self, from_date: datetime, to_date: datetime, template: str = 'Kunde: '):
+        events = self.make_service().events().list(calendarId='primary', timeMin=from_date.isoformat() + 'Z',
+                                                   timeMax=to_date.isoformat() + 'Z',
                                                    singleEvents=True,
                                                    orderBy='startTime', q=template).execute().get('items', [])
         return events
