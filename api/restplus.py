@@ -3,6 +3,7 @@ import logging
 from flask_restplus import Api
 
 import settings
+from api.auth import UnauthorizedException
 
 log = logging.getLogger(__name__)
 
@@ -17,3 +18,8 @@ def default_error_handler(e):
 
     if not settings.FLASK_DEBUG:
         return {'message': message}, 500
+
+
+@api.errorhandler(UnauthorizedException)
+def handle_custom_exception(error):
+    return {'message': 'Not authorized!'}, 401

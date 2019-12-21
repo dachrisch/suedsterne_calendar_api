@@ -5,6 +5,13 @@ from api.endpoints.deployment import DeploymentsCollection, DeploymentItem
 from app import create_app
 
 
+class FakeAuthProvider(object):
+
+    @property
+    def authorized(self):
+        return True
+
+
 class TestCalendarService:
     def customer_events(self, from_date: datetime, to_date: datetime, template: str = 'Kunde: '):
         one = {'kind': 'calendar#event',
@@ -46,6 +53,7 @@ class TestCalendarService:
 class TestDeploymentsApi(unittest.TestCase):
     def setUp(self):
         DeploymentsCollection.calendar_service = TestCalendarService()
+        DeploymentsCollection.auth_service = FakeAuthProvider()
         DeploymentItem.calendar_service = TestCalendarService()
         self.app = create_app().test_client()
 

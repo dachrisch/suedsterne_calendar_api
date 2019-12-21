@@ -2,6 +2,7 @@ import logging.config
 import os
 
 from flask import Flask, Blueprint
+from flask_dance.contrib.google import make_google_blueprint
 
 import settings
 from api.endpoints.deployment import ns as deployments_namespace
@@ -24,6 +25,12 @@ def create_app():
     flask_app = Flask(__name__)
 
     configure_app(flask_app)
+
+    blueprint = make_google_blueprint(
+        client_id=os.getenv('CLIENT_ID', 'client_id'),
+        client_secret=os.getenv('CLIENT_SECRET', 'client_secret'),
+    )
+    flask_app.register_blueprint(blueprint, url_prefix="/login")
 
     blueprint = Blueprint('api', __name__, url_prefix='/api')
 

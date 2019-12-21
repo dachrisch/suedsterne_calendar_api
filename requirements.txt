@@ -1,5 +1,7 @@
 flask
 flask-restplus
+flask_dance
 google-api-python-client
 python-dateutil
 parse
+oauth2client

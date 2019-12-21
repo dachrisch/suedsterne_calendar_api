@@ -5,6 +5,7 @@ from datetime import datetime
 from flask import request
 from flask_restplus import Resource
 
+from api.auth import GoogleAuthProvider, UnauthorizedException
 from api.calendar.service import GoogleCalendarService
 from api.model import Deployment
 from api.parsers import calendar_arguments
@@ -15,14 +16,16 @@ log = logging.getLogger(__name__)
 
 ns = api.namespace('deployments', description='Operations for deployments')
 
-
 @ns.route('/')
 class DeploymentsCollection(Resource):
     calendar_service = GoogleCalendarService()
+    auth_service = GoogleAuthProvider()
 
     @api.expect(calendar_arguments)
     @api.marshal_with(deployment)
     def get(self):
+        if not DeploymentsCollection.auth_service.authorized:
+            raise UnauthorizedException
         arguments = calendar_arguments.parse_args(request)
 
         try:
