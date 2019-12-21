@@ -20,15 +20,18 @@ class TestCalendarService:
                  }]
 
     def event_by_id(self, id):
-        return {'kind': 'calendar#event',
-                'id': '678495465gfds347859uzhkgjf',
-                'status': 'confirmed',
-                'created': '2019-09-19T15:52:50.000Z',
-                'updated': '2019-10-28T12:24:34.718Z',
-                'summary': 'Kunde: zeppelin',
-                'start': {'date': '2019-10-01'},
-                'end': {'date': '2019-10-02'},
-                'description': 'Action: Coaching\nPrice: 1800 €\nTravel Expense: 100 €'}
+        if '678495465gfds347859uzhkgjf' == id:
+            return {'kind': 'calendar#event',
+                    'id': '678495465gfds347859uzhkgjf',
+                    'status': 'confirmed',
+                    'created': '2019-09-19T15:52:50.000Z',
+                    'updated': '2019-10-28T12:24:34.718Z',
+                    'summary': 'Kunde: zeppelin',
+                    'start': {'date': '2019-10-01'},
+                    'end': {'date': '2019-10-02'},
+                    'description': 'Action: Coaching\nPrice: 1800 €\nTravel Expense: 100 €'}
+        else:
+            return None
 
 
 class TestInvoiceApp(unittest.TestCase):
@@ -51,3 +54,7 @@ class TestInvoiceApp(unittest.TestCase):
         self.assertIn(b'"action": "Coaching"', response.data)
         self.assertIn(b'"price": "1800"', response.data)
         self.assertIn(b'"date": "2019-10-01', response.data)
+
+    def test_deployment_not_found(self):
+        response = self.app.get('/api/deployments/not_available', follow_redirects=True)
+        self.assertEqual(response.status_code, 500)
