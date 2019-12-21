@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from os import path
 
 from google.oauth2 import service_account
@@ -9,7 +9,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 class GoogleCalendarService(object):
 
-    def customer_events(self, from_date: datetime, to_date: datetime, template: str = 'Kunde: '):
+    def customer_events(self, from_date: date, to_date: date, template: str = 'Kunde: '):
         events = self.make_service().events().list(calendarId='primary', timeMin=from_date.isoformat() + 'Z',
                                                    timeMax=to_date.isoformat() + 'Z',
                                                    singleEvents=True,

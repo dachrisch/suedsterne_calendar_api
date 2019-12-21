@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, date
 
 from api.endpoints.deployment import DeploymentsCollection, DeploymentItem
 from app import create_app
@@ -26,11 +26,11 @@ class TestCalendarService:
                'start': {'date': '2019-10-02'},
                'description': 'Action: Coaching\nPrice: 1800 €\nTravel Expense: 100 €'
                }
-        if from_date <= datetime(2019, 10, 1) < to_date:
+        if from_date <= date(2019, 10, 1) < to_date:
             return [one, two]
-        elif from_date <= datetime(2019, 10, 2) <= to_date:
+        elif from_date <= date(2019, 10, 2) <= to_date:
             return [two]
-        elif from_date <= datetime(2019, 10, 1) <= to_date:
+        elif from_date <= date(2019, 10, 1) <= to_date:
             return [one]
         else:
             return []
