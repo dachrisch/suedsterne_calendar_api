@@ -89,6 +89,7 @@ class TestDeploymentsApi(unittest.TestCase):
         self.assertIn(b'"action": "Coaching"', response.data)
         self.assertIn(b'"price": "1800"', response.data)
         self.assertIn(b'"date": "2019-10-01', response.data)
+        self.assertIn(b'"travel_expense": "100"', response.data)
 
     def test_deployment_not_found(self):
         response = self.app.get('/api/deployments/not_available', follow_redirects=True)

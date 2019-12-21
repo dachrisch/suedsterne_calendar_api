@@ -8,7 +8,7 @@ deployment = api.model('Deployment', {
     'action': fields.String(required=True, description='Description of the action'),
     'date': fields.DateTime(required=True, description='Date of the deployment'),
     'price': fields.String(reqired=True, description='Price for this action'),
-    'travel expense': fields.Integer(reqired=False, description='Travel Expenses (if applicable)'),
+    'travel_expense': fields.String(reqired=False, description='Travel Expenses (if applicable)'),
 })
 
 pagination = api.model('A page of results', {

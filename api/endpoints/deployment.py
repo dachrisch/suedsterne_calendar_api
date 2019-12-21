@@ -20,12 +20,13 @@ ns = api.namespace('deployments', description='Operations for deployments')
 class Deployment:
     ACTION_TEMPLATE = "Action: {value:w}"
     PRICE_TEMPLATE = "Price: {value:d}"
-    TRAVEL_EXPENSE_TEMPLATE = "Travel Expense: {value}"
+    TRAVEL_EXPENSE_TEMPLATE = "Travel Expense: {value:d}"
     id = 1
     customer = 'name'
     action = 'action'
     date = datetime(2019, 12, 1)
     price = 1280
+    travel_expense = 100
 
     def __init__(self, calendar_entry):
         self.id = calendar_entry['id']
